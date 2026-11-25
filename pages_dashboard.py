@@ -1,14 +1,19 @@
+import os
+
 import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-DATA_FILE = "zameen-updated.csv"
+FULL_FILE = "zameen-updated.csv"
+SAMPLE_FILE = "data/zameen_sample.csv"
 
 
 @st.cache_data
 def load_data():
     cols = ["price", "city", "property_type", "bedrooms", "baths", "purpose", "Area Size"]
-    df = pd.read_csv(DATA_FILE, usecols=cols)
+    # Use the full Kaggle file if it exists, otherwise the small sample from GitHub
+    data_file = FULL_FILE if os.path.exists(FULL_FILE) else SAMPLE_FILE
+    df = pd.read_csv(data_file, usecols=cols)
     df = df[df["purpose"].str.contains("sale", case=False, na=False)]
     return df
 
@@ -24,6 +29,7 @@ def show_home():
 
 def show_data_overview():
     st.title("Data Overview")
+    st.caption("Real property data from Zameen.com (Kaggle dataset).")
     df = load_data()
 
     col1, col2 = st.columns(2)
